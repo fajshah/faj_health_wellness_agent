@@ -31,6 +31,14 @@ def handle_diabetic_diet():
 def escalate_to_human():
     return "📞 A human trainer will contact you. [Book Now](https://example.com/booking) 💬"
 
+def weight_loss_exercises():
+    return """
+- 🏃‍♂️ **Cardio (5x/week):** Jogging, brisk walking, or cycling (30-45 min)  
+- 🧘 **Stretching/Yoga (2x/week):** To increase flexibility and reduce stress  
+- 🏋️‍♀️ **Strength training (3x/week):** Bodyweight exercises (squats, pushups, planks)  
+- 📅 **Routine:** Alternate cardio and strength days  
+"""
+
 # --- Streamlit UI Setup ---
 st.set_page_config(
     page_title="💪 Faj's AI Wellness Planner",
@@ -61,7 +69,7 @@ with st.expander("❓ What can I ask? (Click to expand)", expanded=True):
     """, unsafe_allow_html=True)
 
 st.markdown("**Quick prompts:**")
-cols = st.columns([1,1,1])
+cols = st.columns([1, 1, 1])
 
 if 'chat_history' not in st.session_state:
     st.session_state['chat_history'] = []
@@ -95,13 +103,12 @@ if user_input and user_input != "":
     st.session_state['user_input'] = ""  # reset input box
 
     lowered = user_input.lower()
-
-    # Response collection
     responses = []
 
-    # 1. Goal Analyzer
+    # 1. Goal Analyzer + Exercises
     if "lose" in lowered and "kg" in lowered:
         responses.append(("🧠 Goal Analysis", analyze_goal(user_input)))
+        responses.append(("💪 Weight Loss Exercises", weight_loss_exercises()))
 
     # 2. Vegetarian Meal Plan
     if "vegetarian" in lowered:
