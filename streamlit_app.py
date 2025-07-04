@@ -41,14 +41,14 @@ def weight_loss_exercises():
 
 # --- Streamlit UI Setup ---
 st.set_page_config(
-    page_title="💪 Faj's AI Wellness Planner",
+    page_title="💪 health AI Wellness Planner",
     layout="centered",
     initial_sidebar_state="expanded"
 )
 
 st.markdown(
     """
-    <h1 style='text-align:center; color:#4CAF50;'>🧘‍♀️ Faj's AI Health & Wellness Dashboard</h1>
+    <h1 style='text-align:center; color:#4CAF50;'>🧘‍♀️ AI Health & Wellness Dashboard</h1>
     <p style='text-align:center; font-size:16px; color:#666;'>Get personalized wellness plans tailored for YOU!</p>
     """,
     unsafe_allow_html=True,

@@ -2,6 +2,7 @@ import os
 import google.generativeai as genai
 from dotenv import load_dotenv
 
+from openai import AsyncOpenAI
 load_dotenv()
 api_key = os.getenv("GEMINI_API_KEY")
 if not api_key:
