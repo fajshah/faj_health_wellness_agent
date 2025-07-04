@@ -1,4 +1,5 @@
 import streamlit as st
+from datetime import datetime, timedelta
 
 # --- Tool Functions ---
 def analyze_goal(text):
@@ -39,16 +40,25 @@ def weight_loss_exercises():
 - 📅 **Routine:** Alternate cardio and strength days  
 """
 
+# --- Check-in & Progress Tracker Classes ---
+class CheckinScheduler:
+    def schedule_checkins(self, start_date, interval_days=7, total_checkins=4):
+        return [start_date + timedelta(days=i * interval_days) for i in range(total_checkins)]
+
+class ProgressTracker:
+    def track(self, old_data, new_data):
+        return {key: new_data[key] - old_data.get(key, 0) for key in new_data}
+
 # --- Streamlit UI Setup ---
 st.set_page_config(
-    page_title="💪 health AI Wellness Planner",
+    page_title="💪 faj AI health Wellness Planner",
     layout="centered",
     initial_sidebar_state="expanded"
 )
 
 st.markdown(
     """
-    <h1 style='text-align:center; color:#4CAF50;'>🧘‍♀️ AI Health & Wellness Dashboard</h1>
+    <h1 style='text-align:center; color:#4CAF50;'>🧘‍♀️Faj's AI Health & Wellness Dashboard</h1>
     <p style='text-align:center; font-size:16px; color:#666;'>Get personalized wellness plans tailored for YOU!</p>
     """,
     unsafe_allow_html=True,
@@ -98,35 +108,28 @@ st.markdown("---")
 user_input = st.text_input("💬 Your message here...", value=st.session_state['user_input'], key="input_box")
 
 if user_input and user_input != "":
-    # Save user input
     st.session_state['chat_history'].append({"role": "user", "content": user_input})
-    st.session_state['user_input'] = ""  # reset input box
+    st.session_state['user_input'] = ""
 
     lowered = user_input.lower()
     responses = []
 
-    # 1. Goal Analyzer + Exercises
     if "lose" in lowered and "kg" in lowered:
         responses.append(("🧠 Goal Analysis", analyze_goal(user_input)))
         responses.append(("💪 Weight Loss Exercises", weight_loss_exercises()))
 
-    # 2. Vegetarian Meal Plan
     if "vegetarian" in lowered:
         responses.append(("🥗 Vegetarian Meal Plan", generate_meal_plan(veg=True)))
 
-    # 3. Injury Support
     if "knee pain" in lowered or "injury" in lowered:
         responses.append(("🦵 Injury Support Plan", handle_injury(user_input)))
 
-    # 4. Diabetic Diet
     if "diabetic" in lowered:
         responses.append(("🍭 Diabetic-Friendly Diet", handle_diabetic_diet()))
 
-    # 5. Escalation
     if "real trainer" in lowered or "talk to" in lowered:
         responses.append(("📞 Escalation", escalate_to_human()))
 
-    # Save assistant responses
     for title, content in responses:
         st.session_state['chat_history'].append({"role": "assistant", "title": title, "content": content})
 
@@ -138,3 +141,29 @@ for msg in st.session_state['chat_history']:
         st.markdown(f"### {msg['title']}")
         st.markdown(msg['content'])
         st.markdown("---")
+
+# --- 📅 Check-in & Progress Tracking Section ---
+st.markdown("## 📆 Weekly Check-ins & Progress Tracker")
+
+with st.form("checkin_form"):
+    checkin_date = st.date_input("Start date for check-ins", datetime.today())
+    old_weight = st.number_input("Previous Weight (kg)", value=70)
+    new_weight = st.number_input("Current Weight (kg)", value=66)
+    submitted = st.form_submit_button("📊 Show Progress & Check-in Dates")
+
+    if submitted:
+        scheduler = CheckinScheduler()
+        tracker = ProgressTracker()
+
+        checkins = scheduler.schedule_checkins(datetime.combine(checkin_date, datetime.min.time()))
+        progress = tracker.track({"weight": old_weight}, {"weight": new_weight})
+
+        st.success("✅ Progress and check-in dates calculated!")
+
+        st.markdown("### 📅 Your Check-in Dates:")
+        for i, date in enumerate(checkins, 1):
+            st.write(f"Check-in {i}: {date.strftime('%Y-%m-%d')}")
+
+        st.markdown("### 📊 Your Progress:")
+        for key, val in progress.items():
+            st.write(f"{key.capitalize()}: {val:+} kg change")
